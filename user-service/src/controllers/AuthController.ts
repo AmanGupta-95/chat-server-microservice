@@ -28,14 +28,17 @@ const register = async (req: Request, res: Response) => {
       throw new ApiError(400, 'User already exists');
     }
 
+    const encryptedPassword = await encryptPassword(password);
+
     const user = await User.create({
       name,
       email,
-      password: encryptPassword(password),
+      password: encryptPassword,
     });
 
     return res.status(201).json({
-      status: 'success',
+      status: 201,
+      message: 'User registered successfully!',
       data: {
         id: user._id,
         name: user.name,
@@ -44,7 +47,7 @@ const register = async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     return res.status(500).json({
-      status: 'fail',
+      status: 500,
       message: err?.message || 'Internal server error',
     });
   }
@@ -70,12 +73,13 @@ const login = async (req: Request, res: Response) => {
     const token = await createSendToken(user, res);
 
     return res.status(200).json({
-      status: 'success',
+      status: 200,
+      message: 'User logged in successfully!',
       token,
     });
   } catch (err: any) {
     return res.status(500).json({
-      status: 'fail',
+      status: 500,
       message: err?.message || 'Internal server error',
     });
   }
